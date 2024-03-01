@@ -67,5 +67,5 @@ teardown() {
         skip "dotnet is not supported on ${ARCH}"
     fi
     run otelify.sh -d --  dotnet run --project ${APP_DIR}
-    assert_output --partial 'traceId:'
+    assert_output --partial 'Activity.TraceId:'
 }

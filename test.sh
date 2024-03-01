@@ -30,18 +30,17 @@ for arg in "$@"; do
   fi
 done
 
+DOCKER_COMMAND="docker"
+
+# Check if we have permissions to run Docker without sudo, note that this check will also fail if Docker is not installed or running.
+if ! docker info &>/dev/null; then
+  echo "You do not have permissions to run Docker without sudo. Trying with sudo..."
+  DOCKER_COMMAND="sudo docker"
+fi
+
 if [ ${WITH_INTEGRATION} -eq 1 ]; then
   FULL_IMAGE_NAME="otelify-bats:latest"
-  docker build -t "$FULL_IMAGE_NAME" .
+  ${DOCKER_COMMAND} build -t "$FULL_IMAGE_NAME" .
 fi
 
-COMMAND=(docker run -it -e WITH_INTEGRATION="${WITH_INTEGRATION}" -e INTEGRATION_TEST_URL="${INTEGRATION_TEST_URL}" -e BATS_LIB_PATH=/usr/lib/bats -v "${PWD}:/code" "${FULL_IMAGE_NAME}" test)
-
-if docker info &>/dev/null; then
-  "${COMMAND[@]}"
-else
-  echo "You do not have permissions to run Docker without sudo. Trying with sudo..."
-  # Run Docker command with sudo here
-  # shellcheck disable=SC2086
-  sudo "${COMMAND[@]}"
-fi
+${DOCKER_COMMAND} run -it -e WITH_INTEGRATION="${WITH_INTEGRATION}" -e INTEGRATION_TEST_URL="${INTEGRATION_TEST_URL}" -e BATS_LIB_PATH=/usr/lib/bats -v "${PWD}:/code" "${FULL_IMAGE_NAME}" test
