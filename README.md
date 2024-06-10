@@ -34,10 +34,10 @@ This will automatically download the
 [OpenTelemetry Java agent](https://opentelemetry.io/docs/languages/java/automatic/)
 and add it to the Java application via the `javaagent` parameter.
 
-Besides Java `otelify.sh` can also instrument .NET and Node.JS applications for
+Besides Java `otelify.sh` can also instrument .NET and Node.js applications for
 you.
 
-For Node.JS you also use `otelify.sh` before calling `node`:
+For Node.js you also use `otelify.sh` before calling `node`:
 
 ```bash
 otelify.sh -- node your-app.js
@@ -45,7 +45,7 @@ otelify.sh -- node your-app.js
 
 This will automatically install the
 [@opentelemetry/auto-instrumentations-node](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node)
-package and use the build in capabilities to instrument a Node.JS application
+package and use the build in capabilities to instrument a Node.js application
 without touching the code.
 
 For .NET as well you only need to put `otelify.sh` in front of your command:

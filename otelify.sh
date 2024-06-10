@@ -26,7 +26,6 @@ OTEL_DOTNET_AUTO_INSTRUMENTATION_URL=https://github.com/open-telemetry/opentelem
 OTEL_JAVA_AGENT_URL=https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar
 OTEL_NODEJS_PACKAGES="@opentelemetry/auto-instrumentations-node @opentelemetry/api"
 
-
 # Some variables used across different auto instrumentations
 # OTEL_DOTNET_AUTO_HOME needs to be exported, because it will be used in shell scripts
 export OTEL_DOTNET_AUTO_HOME="${OTELIFY_DIRECTORY}/otel-dotnet-auto"
@@ -133,7 +132,6 @@ if [[ $(type -t dotnet_auto_install) != function ]]; then
 		${@}
 	}
 fi
-
 
 # there should be at least one argument
 if [ $# -lt 1 ]; then
@@ -258,7 +256,7 @@ case "${language}" in
 	download_java
 
 	debug "Starting the application with the OpenTelemetry Java"
-	
+
 	setup_java
 
 	# Java currently does not support "console", but "logging"
@@ -279,9 +277,9 @@ case "${language}" in
 	download_node
 
 	debug "Starting the application with the OpenTelemetry Node.JS"
-	
+
 	setup_node
-	
+
 	${application}
 
 	;;
@@ -301,7 +299,7 @@ case "${language}" in
 	setup_node
 
 	debug "Starting the application with OpenTelemetry"
-	
+
 	# shellcheck disable=SC2086
 	dotnet_instrument ${application}
 	;;
