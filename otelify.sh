@@ -70,6 +70,7 @@ download_node() {
 
 	# Download node modules if they do not exist
 	if [ ! -d "${OTELIFY_DIRECTORY}/node_modules" ]; then
+		# shellcheck disable=SC2086
 		npm install --prefix "${OTELIFY_DIRECTORY}" ${OTEL_NODEJS_PACKAGES}
 	fi
 	# only keep the downloads if the -k option is passed
@@ -300,7 +301,8 @@ case "${language}" in
 	setup_node
 
 	debug "Starting the application with OpenTelemetry"
-
+	
+	# shellcheck disable=SC2086
 	dotnet_instrument ${application}
 	;;
 esac

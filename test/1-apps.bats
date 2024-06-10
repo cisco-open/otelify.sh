@@ -1,4 +1,6 @@
 #!/usr/bin/env bats
+# shellcheck disable=SC2317
+#
 # Copyright 2024 Cisco Systems, Inc. and its affiliates
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +37,7 @@ _mock_setup() {
 		echo "JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS}"
 		echo "java ${*}"
 	}
+
 	dotnet_instrument() {
 
 		echo "OTEL_DOTNET_AUTO_TRACES_CONSOLE_EXPORTER_ENABLED=${OTEL_DOTNET_AUTO_TRACES_CONSOLE_EXPORTER_ENABLED}"
@@ -45,12 +48,15 @@ _mock_setup() {
 		echo "OTEL_LOGS_EXPORTER=${OTEL_LOGS_EXPORTER}"
 		echo "${OTEL_DOTNET_AUTO_HOME}/instrument.sh ${*}"
 	}
+
 	chmod() {
 		echo "chmod ${*}"	
 	}
+
 	dotnet_auto_install() {
-		echo ${*}
+		echo "${@}"
 	}
+
 	curl() {
 		echo "curl ${*}"
 	}
@@ -70,18 +76,18 @@ setup() {
     _common_setup
     APPJS=/tmp/app.js
     APPJAR=/tmp/myapp.jar
-    echo 'console.log("test");' > ${APPJS}
-    touch ${APPJAR}
+    echo 'console.log("test");' > "${APPJS}"
+    touch "${APPJAR}"
 }
 
 teardown() {
     _common_teardown
-    rm -f ${APPJS} ${APPJAR}
+    rm -f "${APPJS}" "${APPJAR}"
 }
 
 @test "can otelify nodejs applications" {
 
-    run otelify.sh -- ${APPJS}
+    run otelify.sh -- "${APPJS}"
     assert_output -  << END
 npm install --prefix ${OTELIFY_DIRECTORY} @opentelemetry/auto-instrumentations-node @opentelemetry/api
 OTEL_TRACES_EXPORTER=console
@@ -92,7 +98,7 @@ NODE_OPTIONS= --require @opentelemetry/auto-instrumentations-node/register
 node ${APPJS}
 END
 
-    run otelify.sh -- node -r ./mytest.js ${APPJS}
+    run otelify.sh -- node -r ./mytest.js "${APPJS}"
     assert_output -  << END
 npm install --prefix ${OTELIFY_DIRECTORY} @opentelemetry/auto-instrumentations-node @opentelemetry/api
 OTEL_TRACES_EXPORTER=console
@@ -105,7 +111,7 @@ END
 }
 
 @test "can otelify java applications" {
-    run otelify.sh -- java -jar ${APPJAR}
+    run otelify.sh -- java -jar "${APPJAR}"
     assert_output -  << END
 curl -o ${OTELIFY_DIRECTORY}/otelify-opentelemetry-javaagent.jar -L https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar
 OTEL_TRACES_EXPORTER=logging
@@ -116,7 +122,7 @@ JAVA_TOOL_OPTIONS= -javaagent:${OTELIFY_DIRECTORY}/otelify-opentelemetry-javaage
 java -jar ${APPJAR}
 END
 
-    run otelify.sh -- java -jar ${APPJAR}
+    run otelify.sh -- java -jar "${APPJAR}"
     assert_output -  << END
 curl -o ${OTELIFY_DIRECTORY}/otelify-opentelemetry-javaagent.jar -L https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar
 OTEL_TRACES_EXPORTER=logging
@@ -124,7 +130,7 @@ OTEL_METRICS_EXPORTER=logging
 OTEL_LOGS_EXPORTER=logging
 OTEL_METRIC_EXPORT_INTERVAL=15000
 JAVA_TOOL_OPTIONS= -javaagent:${OTELIFY_DIRECTORY}/otelify-opentelemetry-javaagent.jar
-java -jar /tmp/myapp.jar
+java -jar ${APPJAR}
 END
 }
 

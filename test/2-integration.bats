@@ -16,21 +16,23 @@
 # SPDX-License-Identifier: Apache-2.0
 
 setup_file() {
-    if [ ${WITH_INTEGRATION} -ne 1 ]; then
+    if [ "${WITH_INTEGRATION}" -eq "0" ]; then
         skip "Integration tests turned off: WITH_INTEGRATION=${WITH_INTEGRATION}"
     fi
-
     commands=("node" "npm" "java" "dotnet" "curl")
-
     for ((i = 0; i < ${#commands[@]}; i++)); do
         local command=${commands[$i]}
-        if ! command -v $command >/dev/null 2>&1; then
+        if ! command -v "${command}" >/dev/null 2>&1; then
            skip "\"${command}\" is not available."
         fi
     done
-
     export URL="${INTEGRATION_TEST_URL}"
+}
 
+teardown_file() {
+    if [ "${WITH_INTEGRATION}" -eq "0" ]; then
+        skip "Integration tests turned off: WITH_INTEGRATION=${WITH_INTEGRATION}"
+    fi
 }
 
 setup() {
@@ -45,27 +47,22 @@ teardown() {
 }
 
 @test "can otelify nodejs applications" {    
-    run otelify.sh -- node ${APP_DIR}/app.js
+    run otelify.sh -- node "${APP_DIR}/app.js"
     assert_output --partial 'traceId: '
 }
 
 @test "can otelify java applications" {
     OLD_PWD=${PWD}
-    cd ${APP_DIR}
+    cd "${APP_DIR}"
     javac App.java
     jar cvfm app.jar manifest.txt App.class
-    cd ${OLD_PWD}
-    run otelify.sh -d -- java -jar ${APP_DIR}/app.jar
+    cd "${OLD_PWD}"
+    run otelify.sh -d -- java -jar "${APP_DIR}/app.jar"
     assert_output --partial 'io.opentelemetry.exporter.logging.LoggingSpanExporter'
 }
 
 
 @test "can otelify dotnet applications" {
-    # Check if the architecture is arm64 (MacOS) or aarch64 (others)
-    ARCH=$(uname -m)
-    if [[ "$ARCH" == "arm64" ]] || [[ "$ARCH" == "aarch64" ]]; then
-        skip "dotnet is not supported on ${ARCH}"
-    fi
-    run otelify.sh -d --  dotnet run --project ${APP_DIR}
+    run otelify.sh -d --  dotnet run --project "${APP_DIR}"
     assert_output --partial 'Activity.TraceId:'
 }

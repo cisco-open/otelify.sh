@@ -16,7 +16,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-require('https').get(process.env.URL, res => {
+require('https')
+  .get(process.env.URL, (res) => {
     console.log(`Status Code: ${res.statusCode}`);
-    res.on('data', d => process.stdout.write('.'));
-  }).on('error', e => console.error(e));
+    res.on('data', (d) => process.stdout.write('.'));
+  })
+  .on('error', (e) => console.error(e));

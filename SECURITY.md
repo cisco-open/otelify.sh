@@ -10,10 +10,10 @@ This document outlines security procedures and general policies for the
 
 ## Reporting a Bug
 
-The `otelify.sh` team and community take all security bugs in
-`otelify.sh` seriously. Thank you for improving the security of
-`otelify.sh`. We appreciate your efforts and responsible disclosure and
-will make every effort to acknowledge your contributions.
+The `otelify.sh` team and community take all security bugs in `otelify.sh`
+seriously. Thank you for improving the security of `otelify.sh`. We appreciate
+your efforts and responsible disclosure and will make every effort to
+acknowledge your contributions.
 
 Report security bugs by emailing `oss-security@cisco.com`.
 

@@ -19,7 +19,7 @@ WITH_INTEGRATION=1
 
 INTEGRATION_TEST_URL=${INTEGRATION_TEST_URL:-"https://github.com/cisco-open/"}
 
-FULL_IMAGE_NAME=bats/bats:latest
+FULL_IMAGE_NAME=bats/bats:1.11.0
 
 # Check if we are doing a quick check, if so we will skip the integration tests.
 for arg in "$@"; do
