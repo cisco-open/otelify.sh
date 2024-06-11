@@ -33,7 +33,7 @@ development environment as follows.
   ```
 
   This should return a version string like
-  `Docker version 26.1.1, build 4cf5afa`. Older versions of docker should work
+  `Docker version 26.1.1, build 4cf5afa`. Older versions of Docker should work
   as well, but if you face any issues make sure to use a recent version.
 
 - Within the repository folder you can now execute the tests based on the
@@ -46,8 +46,8 @@ development environment as follows.
   All tests will run in a Docker container (see the [/Dockerfile](./Dockerfile)
   for details).
 
-- While developing you might want to skip the integrations tests, since they are
-  taking a long time to complete, that's why you can turn them off easily:
+- While developing you might want to skip the integrations tests, since they can
+  take a while to complete, and can be easily disabled:
 
   ```shell
   ./test.sh -q

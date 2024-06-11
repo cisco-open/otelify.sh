@@ -276,7 +276,7 @@ case "${language}" in
 "node")
 	download_node
 
-	debug "Starting the application with the OpenTelemetry Node.JS"
+	debug "Starting the application with the OpenTelemetry Node.js"
 
 	setup_node
 
