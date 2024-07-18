@@ -1,0 +1,25 @@
+name: Bats Test
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+    test:
+        strategy:
+            matrix:
+                testname: [0-otelify, 1-apps, 2-integration]
+        runs-on: ubuntu-24.04
+    
+        steps:
+        - uses: actions/checkout@v2
+
+        - name: Set up Bats and Bats-support
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y bats bats-support bats-assert
+
+        - name: Run Bats tests
+          run: |
+            export INTEGRATION_TEST_URL="https://github.com/cisco-open/"
+            bats --filter-tags '!integration:dotnet' test/${{ matrix.testname }}.bats
