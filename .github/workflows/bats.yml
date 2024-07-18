@@ -10,7 +10,8 @@ jobs:
     
         steps:
         - uses: actions/checkout@v2
-          path: /code
+          with:
+            path: /code
 
         - name: Set up Bats and Bats-support
           run: |
