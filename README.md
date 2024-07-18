@@ -22,9 +22,14 @@ provided by the OpenTelemetry project.
 
 ## Usage
 
-Download the [`otelify.sh`](./otelify.sh) shell script from this repository,
-make it executable (`chmod +x otelify.sh`) and use it as a wrapper around your
-instructions to run the application, e.g.
+Download `otelify.sh` and make it executable:
+
+```bash
+curl -v -L -O https://github.com/cisco-open/otelify.sh/releases/latest/download/otelify.sh
+chmod +x otelify.sh
+```
+
+Then, use it as a wrapper around your instructions to run the application, e.g.
 
 ```bash
 otelify.sh -- java -jar YourApplication.jar
