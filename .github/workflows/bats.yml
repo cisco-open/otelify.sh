@@ -10,6 +10,14 @@ jobs:
     
         steps:
         - uses: actions/checkout@v2
-    
+          path: /code
+
+        - name: Set up Bats and Bats-support
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y bats bats-support bats-assert
+
         - name: Run Bats tests
-          run: ./test.sh
+          run: |
+            cd /code
+            bats test/
