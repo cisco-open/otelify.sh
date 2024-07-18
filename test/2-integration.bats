@@ -46,11 +46,13 @@ teardown() {
     # rm -rf ${APP_DIR}
 }
 
+#bats test_tags=integration:nodejs, nodejs
 @test "can otelify nodejs applications" {    
     run otelify.sh -- node "${APP_DIR}/app.js"
     assert_output --partial 'traceId: '
 }
 
+#bats test_tags=integration:java, java
 @test "can otelify java applications" {
     OLD_PWD=${PWD}
     cd "${APP_DIR}"
@@ -61,7 +63,7 @@ teardown() {
     assert_output --partial 'io.opentelemetry.exporter.logging.LoggingSpanExporter'
 }
 
-
+#bats test_tags=integration:dotnet, dotnet
 @test "can otelify dotnet applications" {
     run otelify.sh -d --  dotnet run --project "${APP_DIR}"
     assert_output --partial 'Activity.TraceId:'

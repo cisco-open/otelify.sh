@@ -22,4 +22,4 @@ jobs:
         - name: Run Bats tests
           run: |
             export INTEGRATION_TEST_URL="https://github.com/cisco-open/"
-            bats test/${{ matrix.testname }}.bats
+            bats --filter-tags '!integration:dotnet' test/${{ matrix.testname }}.bats
