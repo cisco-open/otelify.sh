@@ -30,7 +30,7 @@ get_usage_line() {
 
 @test "can run otelify.sh" {
     run get_usage_line
-    assert_output 'Usage: /code/test/../otelify.sh [options] <application>'
+    assert_output "Usage: ${OTELIFY_SHELL_SCRIPT_PATH}/otelify.sh [options] <application>"
 }
 
 get_debug_line() {

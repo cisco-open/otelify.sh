@@ -20,6 +20,7 @@ _common_setup() {
     bats_load_library 'bats-assert'
     DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" >/dev/null 2>&1 && pwd)"
     PATH="$DIR/../:$PATH"
+    export OTELIFY_SHELL_SCRIPT_PATH="$DIR/.."
     export OTELIFY_DIRECTORY="/tmp/otelify-test-dir"
 }
 
