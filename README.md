@@ -86,7 +86,7 @@ variables.
 Pull requests and bug reports are welcome. For larger changes please create an
 issue first to discuss your proposed changes and possible implications.
 
-More more details please see the [CONTRIBUTING.md](./CONTRIBUTING.md)
+For more details please see the [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## License
 
