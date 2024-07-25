@@ -1,5 +1,9 @@
 # otelify.sh - zero-code instrumentation for every application
 
+[![Release](https://img.shields.io/github/v/release/cisco-open/otelify.sh?display_name=tag)](https://github.com/cisco-open/otelify.sh/releases/latest/)
+[![Contributor-Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-fbab2c.svg)](CODE_OF_CONDUCT.md)
+[![Maintainer](https://img.shields.io/badge/Maintainer-Cisco-00bceb.svg)](https://opensource.cisco.com)
+
 [`otelify.sh`](./otelify.sh) is a shell script that allows you to instrument
 almost any application without the need to touch the application's code. This
 way you can extract telemetry out of an application within seconds. It utilizes
