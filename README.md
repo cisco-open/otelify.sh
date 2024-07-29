@@ -80,6 +80,11 @@ otelify.sh -s -- ./unknown-language.sh
 This call will fail, because `otelify.sh` will not be able to detect any of the
 support languages.
 
+## Examples
+
+For a more detailed example, take a look at the [Node.js in Docker](./examples/nodejs-in-docker/README.md) example,
+which demonstrates how you can add `otelify.sh` to an existing containerized application.
+
 ## More Documentation
 
 Run `otelify.sh -h` to get a list of available options and environment
