@@ -21,12 +21,19 @@ INTEGRATION_TEST_URL=${INTEGRATION_TEST_URL:-"https://github.com/cisco-open/"}
 
 FULL_IMAGE_NAME=bats/bats:1.11.0
 
-# Check if we are doing a quick check, if so we will skip the integration tests.
+DISABLE_DOTNET=""
+
 for arg in "$@"; do
+	# Check if we are doing a quick check, if so we will skip the integration tests.
 	if [ "$arg" = "-q" ] || [ "$arg" = "--quick" ]; then
 		echo "No integration tests will be run"
 		WITH_INTEGRATION=0
-		break # Exit the loop if -q or --quick is found
+	fi
+
+	# Check if we are disabling dotnet integration tests.
+	if [ "$arg" = "-n" ] || [ "$arg" = "--disable-dotnet" ]; then
+		echo "Disabling dotnet integration tests"
+		DISABLE_DOTNET=(--filter-tags '!integration:dotnet')
 	fi
 done
 
@@ -43,4 +50,4 @@ if [ ${WITH_INTEGRATION} -eq 1 ]; then
 	${DOCKER_COMMAND} build -t "$FULL_IMAGE_NAME" .
 fi
 
-${DOCKER_COMMAND} run -it -e WITH_INTEGRATION="${WITH_INTEGRATION}" -e INTEGRATION_TEST_URL="${INTEGRATION_TEST_URL}" -e BATS_LIB_PATH=/usr/lib/bats -v "${PWD}:/code" "${FULL_IMAGE_NAME}" --filter-tags '!integration:dotnet' test
+${DOCKER_COMMAND} run -it -e WITH_INTEGRATION="${WITH_INTEGRATION}" -e INTEGRATION_TEST_URL="${INTEGRATION_TEST_URL}" -e BATS_LIB_PATH=/usr/lib/bats -v "${PWD}:/code" "${FULL_IMAGE_NAME}" "${DISABLE_DOTNET[@]}" test 

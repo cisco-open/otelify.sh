@@ -50,10 +50,8 @@ teardown() {
 @test "can otelify nodejs applications" {    
     run otelify.sh -- node "${APP_DIR}/app.js"
     assert_output --partial 'traceId: '
-}
 
-#bats test_tags=integration:nodejs-debug, nodejs, debug
-@test "can otelify nodejs applications with debug mode enabled" {    
+    # Test with debug flag
     run otelify.sh -D -- node "${APP_DIR}/app.js"
     assert_output --partial '@opentelemetry/api: Registered a global for diag'
 }
@@ -67,10 +65,18 @@ teardown() {
     cd "${OLD_PWD}"
     run otelify.sh -d -- java -jar "${APP_DIR}/app.jar"
     assert_output --partial 'io.opentelemetry.exporter.logging.LoggingSpanExporter'
+
+    # Test with debug flag
+    run otelify.sh -d -D -- java -jar "${APP_DIR}/app.jar"
+    assert_output --partial '[main] DEBUG io.opentelemetry.javaagent.'
 }
 
 #bats test_tags=integration:dotnet, dotnet
 @test "can otelify dotnet applications" {
     run otelify.sh -d --  dotnet run --project "${APP_DIR}"
     assert_output --partial 'Activity.TraceId:'
+
+    # Test with debug flag
+    # run otelify.sh -D -d --  dotnet run --project "${APP_DIR}"
+    # assert_output --partial 'to be done'
 }
