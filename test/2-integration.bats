@@ -52,6 +52,12 @@ teardown() {
     assert_output --partial 'traceId: '
 }
 
+#bats test_tags=integration:nodejs-debug, nodejs, debug
+@test "can otelify nodejs applications with debug mode enabled" {    
+    run otelify.sh -D -- node "${APP_DIR}/app.js"
+    assert_output --partial '@opentelemetry/api: Registered a global for diag'
+}
+
 #bats test_tags=integration:java, java
 @test "can otelify java applications" {
     OLD_PWD=${PWD}

@@ -19,6 +19,7 @@
 
 _mock_setup() {
 	node() {
+		echo "OTEL_LOG_LEVEL=${OTEL_LOG_LEVEL}"
 		echo "OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}"
 		echo "OTEL_METRICS_EXPORTER=${OTEL_METRICS_EXPORTER}"
 		echo "OTEL_LOGS_EXPORTER=${OTEL_LOGS_EXPORTER}"
@@ -30,6 +31,7 @@ _mock_setup() {
 		echo "npm ${*}"
 	}
 	java() {
+		echo "OTEL_JAVAAGENT_DEBUG=${OTEL_JAVAAGENT_DEBUG}"
 		echo "OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}"
 		echo "OTEL_METRICS_EXPORTER=${OTEL_METRICS_EXPORTER}"
 		echo "OTEL_LOGS_EXPORTER=${OTEL_LOGS_EXPORTER}"
@@ -39,7 +41,6 @@ _mock_setup() {
 	}
 
 	dotnet_instrument() {
-
 		echo "OTEL_DOTNET_AUTO_TRACES_CONSOLE_EXPORTER_ENABLED=${OTEL_DOTNET_AUTO_TRACES_CONSOLE_EXPORTER_ENABLED}"
 		echo "OTEL_DOTNET_AUTO_METRICS_CONSOLE_EXPORTER_ENABLED=${OTEL_DOTNET_AUTO_METRICS_CONSOLE_EXPORTER_ENABLED}"
 		echo "OTEL_DOTNET_AUTO_LOGS_CONSOLE_EXPORTER_ENABLED=${OTEL_DOTNET_AUTO_LOGS_CONSOLE_EXPORTER_ENABLED}"
@@ -47,6 +48,11 @@ _mock_setup() {
 		echo "OTEL_METRICS_EXPORTER=${OTEL_METRICS_EXPORTER}"
 		echo "OTEL_LOGS_EXPORTER=${OTEL_LOGS_EXPORTER}"
 		echo "${OTEL_DOTNET_AUTO_HOME}/instrument.sh ${*}"
+	}
+
+	enable_otel_debug_mode() {
+		echo "export OTEL_JAVAAGENT_DEBUG=true"
+		echo "export OTEL_LOG_LEVEL=debug"
 	}
 
 	chmod() {
@@ -90,6 +96,7 @@ teardown() {
     run otelify.sh -- "${APPJS}"
     assert_output -  << END
 npm install --prefix ${OTELIFY_DIRECTORY} @opentelemetry/auto-instrumentations-node @opentelemetry/api
+OTEL_LOG_LEVEL=
 OTEL_TRACES_EXPORTER=console
 OTEL_METRICS_EXPORTER=console
 OTEL_LOGS_EXPORTER=console
@@ -101,6 +108,7 @@ END
     run otelify.sh -- node -r ./mytest.js "${APPJS}"
     assert_output -  << END
 npm install --prefix ${OTELIFY_DIRECTORY} @opentelemetry/auto-instrumentations-node @opentelemetry/api
+OTEL_LOG_LEVEL=
 OTEL_TRACES_EXPORTER=console
 OTEL_METRICS_EXPORTER=console
 OTEL_LOGS_EXPORTER=console
@@ -114,6 +122,7 @@ END
     run otelify.sh -- java -jar "${APPJAR}"
     assert_output -  << END
 curl -o ${OTELIFY_DIRECTORY}/otelify-opentelemetry-javaagent.jar -L https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar
+OTEL_JAVAAGENT_DEBUG=
 OTEL_TRACES_EXPORTER=logging
 OTEL_METRICS_EXPORTER=logging
 OTEL_LOGS_EXPORTER=logging
@@ -125,6 +134,7 @@ END
     run otelify.sh -- java -jar "${APPJAR}"
     assert_output -  << END
 curl -o ${OTELIFY_DIRECTORY}/otelify-opentelemetry-javaagent.jar -L https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar
+OTEL_JAVAAGENT_DEBUG=
 OTEL_TRACES_EXPORTER=logging
 OTEL_METRICS_EXPORTER=logging
 OTEL_LOGS_EXPORTER=logging
@@ -154,7 +164,7 @@ END
 
 @test "will run any command provided" {
     run otelify.sh -- echo "hello"
-    assert_output -  << END
+    assert_output - << END
 curl -o /tmp/otelify-test-dir/otel-dotnet-auto-install.sh -L https://github.com/open-telemetry/opentelemetry-dotnet-instrumentation/releases/latest/download/otel-dotnet-auto-install.sh
 chmod +x /tmp/otelify-test-dir/otel-dotnet-auto-install.sh
 /tmp/otelify-test-dir/otel-dotnet-auto-install.sh
@@ -168,5 +178,31 @@ OTEL_TRACES_EXPORTER=console
 OTEL_METRICS_EXPORTER=console
 OTEL_LOGS_EXPORTER=console
 /tmp/otelify-test-dir/otel-dotnet-auto/instrument.sh echo hello
+END
+}
+
+@test "will set environment variables for otel debug mode" {
+	run otelify.sh -D -- java -jar "${APPJAR}"
+	assert_output - << END
+curl -o ${OTELIFY_DIRECTORY}/otelify-opentelemetry-javaagent.jar -L https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar
+OTEL_JAVAAGENT_DEBUG=true
+OTEL_TRACES_EXPORTER=logging
+OTEL_METRICS_EXPORTER=logging
+OTEL_LOGS_EXPORTER=logging
+OTEL_METRIC_EXPORT_INTERVAL=15000
+JAVA_TOOL_OPTIONS= -javaagent:${OTELIFY_DIRECTORY}/otelify-opentelemetry-javaagent.jar
+java -jar ${APPJAR}
+END
+
+	run otelify.sh -D -- node -r ./mytest.js "${APPJS}"
+	assert_output - << END
+npm install --prefix ${OTELIFY_DIRECTORY} @opentelemetry/auto-instrumentations-node @opentelemetry/api
+OTEL_LOG_LEVEL=debug
+OTEL_TRACES_EXPORTER=console
+OTEL_METRICS_EXPORTER=console
+OTEL_LOGS_EXPORTER=console
+NODE_PATH=${OTELIFY_DIRECTORY}/node_modules:
+NODE_OPTIONS= --require @opentelemetry/auto-instrumentations-node/register
+node -r ./mytest.js ${APPJS}
 END
 }

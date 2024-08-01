@@ -18,6 +18,7 @@
 # Set the default values
 OTELIFY_STRICT=${OTELIFY_STRICT:-false}
 OTELIFY_DEBUG=${OTELIFY_DEBUG:-false}
+OTELIFY_DEBUG_OTEL=${OTELIFY_DEBUG_OTEL:-false}
 OTELIFY_KEEP_DOWNLOADS=${OTELIFY_KEEP_DOWNLOADS:-true}
 OTELIFY_DIRECTORY=${OTELIFY_DIRECTORY:-~/.otelify}
 
@@ -37,7 +38,8 @@ usage() {
 	echo "Usage: $0 [options] <application>"
 	echo ""
 	echo "Options:"
-	echo "  -d: Enable debug mode"
+	echo "  -d: Enable debug mode for otelify.sh"
+	echo "  -D: Enable debug mode for the OpenTelemetry zero-code instrumentation"
 	echo "  -e: Set the OpenTelemetry exporter for all signals, e.g. -e otlp"
 	echo "  -f: Set the directory where the OpenTelemetry files will be downloaded, e.g. -f /tmp. Default is ~/.otelify"
 	echo "  -h: Show this help message"
@@ -118,6 +120,11 @@ setup_node() {
 	export NODE_OPTIONS="${NODE_OPTIONS} --require @opentelemetry/auto-instrumentations-node/register"
 }
 
+enable_otel_debug_mode() {
+	export OTEL_JAVAAGENT_DEBUG=true
+	export OTEL_LOG_LEVEL=debug
+}
+
 # allow tests to overwrite the following two functions for mocking
 if [[ $(type -t dotnet_instrument) != function ]]; then
 	dotnet_instrument() {
@@ -139,12 +146,17 @@ if [ $# -lt 1 ]; then
 	exit 0
 fi
 
-while getopts "de:f:hrs-:" opt; do
+while getopts "dDe:f:hrs-:" opt; do
 	case "${opt}" in
 	'd')
 		# if the option is -d, then debug mode is enabled
 		OTELIFY_DEBUG=true
 		debug "Debug mode enabled"
+		;;
+	'D')
+		# if the option is -D, then debug mode is enabled for the OpenTelemetry zero-code instrumentation
+		OTELIFY_DEBUG_OTEL=true
+		debug "Debug mode enabled for the OpenTelemetry zero-code instrumentation"
 		;;
 	'e')
 		# if the option is -e, then the OpenTelemetry exporter is set for all signals
@@ -191,6 +203,11 @@ shift $((OPTIND - 1))
 if [ ! -d "${OTELIFY_DIRECTORY}" ]; then
 	debug "Creating OTELIFY_DIRECTORY at ${OTELIFY_DIRECTORY}"
 	mkdir -p "${OTELIFY_DIRECTORY}"
+fi
+
+# if OTELIFY_DEBUG_OTEL is set to true, we enable the debug mode for the OpenTelemetry zero-code instrumentation
+if [ "${OTELIFY_DEBUG_OTEL}" = true ]; then
+	enable_otel_debug_mode
 fi
 
 # remaining arguments are the application
